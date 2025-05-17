@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  accounting:
+    image: ${DOCKER_USERNAME}/accounting:latest
+
+  ad:
+    image: ${DOCKER_USERNAME}/ad:latest
+
+  cart:
+    image: ${DOCKER_USERNAME}/cart:latest
+
+  checkout:
+    image: ${DOCKER_USERNAME}/checkout:latest
+
+  currency:
+    image: ${DOCKER_USERNAME}/currency:latest
+
+  email:
+    image: ${DOCKER_USERNAME}/email:latest
+
+  fraud-detection:
+    image: ${DOCKER_USERNAME}/fraud-detection:latest
+
+  frontend:
+    image: ${DOCKER_USERNAME}/frontend:latest
+
+  frontend-proxy:
+    image: ${DOCKER_USERNAME}/frontend-proxy:latest
+
+  image-provider:
+    image: ${DOCKER_USERNAME}/image-provider:latest
+
+  load-generator:
+    image: ${DOCKER_USERNAME}/load-generator:latest
+
+  payment:
+    image: ${DOCKER_USERNAME}/payment:latest
+
+  product-catalog:
+    image: ${DOCKER_USERNAME}/product-catalog:latest
+
+  quote:
+    image: ${DOCKER_USERNAME}/quote:latest
+
+  recommendation:
+    image: ${DOCKER_USERNAME}/recommendation:latest
+
+  shipping:
+    image: ${DOCKER_USERNAME}/shipping:latest
+
+  flagd-ui:
+    image: ${DOCKER_USERNAME}/flagd-ui:latest
+
+  kafka:
+    image: ${DOCKER_USERNAME}/kafka:latest
