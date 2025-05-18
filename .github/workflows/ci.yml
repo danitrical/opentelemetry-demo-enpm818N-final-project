@@ -34,7 +34,21 @@ jobs:
     - name: Set DockerHub username env var
       run: echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
 
-    - name: Build and Push All Service Images
+    - name: Dynamically Build & Push Only Changed Services
       run: |
-        docker-compose -f docker-compose.yml -f docker-compose.override.yml build
-        docker-compose -f docker-compose.yml -f docker-compose.override.yml push
+        echo "📂 Detecting services from src/ directory..."
+        cd src
+        services=($(find . -maxdepth 1 -mindepth 1 -type d -exec basename {} \;))
+        cd ..
+
+        for service in "${services[@]}"; do
+          if git diff --quiet origin/main HEAD -- ./src/$service; then
+            echo "🟡 No changes in $service — skipping"
+          else
+            echo "🟢 Changes detected in $service — building and pushing..."
+            docker build -t $DOCKER_USERNAME/$service:latest ./src/$service
+            docker push $DOCKER_USERNAME/$service:latest
+          fi
+        done
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

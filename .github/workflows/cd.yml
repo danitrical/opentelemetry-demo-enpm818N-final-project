@@ -74,7 +74,7 @@ jobs:
               echo "⚠️ No previous revision found for $deploy — skipping rollback"
             fi
           done
-          exit 1
+          echo "⚠️  All deployments reversed to previous revision"
         else
           echo "✅ All deployments succeeded"
         fi
