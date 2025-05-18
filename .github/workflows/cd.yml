@@ -1,4 +1,4 @@
-name: CD - Deploy OpenTelemetry Demo to EKS (No Helm)
+name: CD - Deploy OpenTelemetry Demo to EKS
 
 on:
   workflow_run:
@@ -44,10 +44,6 @@ jobs:
       run: |
         kubectl apply -f kubernetes/opentelemetry-demo.yaml -n otel-demo
 
-    # - name: Verify Deployment Status
-    #   run: |
-    #     kubectl get all -n otel-demo
-    #     kubectl rollout status deployment/frontend -n otel-demo
     - name: Monitor rollout and rollback on failure
       run: |
         echo "🔍 Checking rollouts..."

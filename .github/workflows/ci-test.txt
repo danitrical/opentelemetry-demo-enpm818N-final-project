@@ -1,0 +1,36 @@
+# name: Test - Docker Compose Integration Tests
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout Repository
+#       uses: actions/checkout@v3
+
+#     - name: Set up Docker Compose
+#       run: |
+#         sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#         sudo chmod +x /usr/local/bin/docker-compose
+#         docker-compose version
+
+#     - name: Start Test Environment
+#       run: |
+#         docker-compose -f docker-compose-tests.yml -f docker-compose-tests_include-override.yml up -d
+
+#     - name: Wait for services to be ready
+#       run: sleep 15  # adjust as needed, or use healthchecks
+
+#     - name: Run Tests Inside Container
+#       run: |
+#         docker-compose -f docker-compose-tests.yml -f docker-compose-tests_include-override.yml exec -T backend pytest tests/
+#         # Replace `backend` and `pytest tests/` with your actual service and test command
+
+#     - name: Shut Down Test Environment
+#       run: |
+#         docker-compose -f docker-compose-tests.yml -f docker-compose-tests_include-override.yml down
