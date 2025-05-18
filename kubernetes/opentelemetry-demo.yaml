@@ -12573,7 +12573,7 @@ spec:
       serviceAccountName: opentelemetry-demo
       containers:
         - name: recommendation
-          image: 'ghcr.io/open-telemetry/demo:2.0.2-recommendation-2323'
+          image: 'ghcr.io/open-telemetry/demo:2.0.2-recommendation'
           imagePullPolicy: IfNotPresent
           ports:
             
