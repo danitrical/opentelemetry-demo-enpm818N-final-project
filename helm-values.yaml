@@ -1,76 +1,56 @@
-demo:
+adService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/ad
+    tag: latest
+cartService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/cart
+    tag: latest
+checkoutService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/checkout
+    tag: latest
+currencyService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/currency
+    tag: latest
+emailService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/email
+    tag: latest
+fraudService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/fraud
+    tag: latest
+frontend:
   image:
     repository: DOCKER_USERNAME_PLACEHOLDER/frontend
     tag: latest
-  accountingService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/accounting
-      tag: latest
-  adService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/ad
-      tag: latest
-  cartService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/cart
-      tag: latest
-  checkoutService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/checkout
-      tag: latest
-  currencyService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/currency
-      tag: latest
-  emailService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/email
-      tag: latest
-  frauddetectionService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/fraud-detection
-      tag: latest
-  frontendService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/frontend
-      tag: latest
-  frontendproxyService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/frontend-proxy
-      tag: latest
-  imageproviderService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/image-provider
-      tag: latest
-  loadgeneratorService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/load-generator
-      tag: latest
-  paymentService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/payment
-      tag: latest
-  productcatalogService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/product-catalog
-      tag: latest
-  quoteService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/quote
-      tag: latest
-  recommendationService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/recommendation
-      tag: latest
-  shippingService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/shipping
-      tag: latest
-  flagduiService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/flagd-ui
-      tag: latest
-  kafkaService:
-    image:
-      repository: DOCKER_USERNAME_PLACEHOLDER/kafka
-      tag: latest
+loadgenerator:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/loadgenerator
+    tag: latest
+paymentService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/payment
+    tag: latest
+productCatalogService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/productcatalog
+    tag: latest
+quoteService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/quote
+    tag: latest
+recommendationService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/recommendation
+    tag: latest
+shippingService:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/shipping
+    tag: latest
+kafka:
+  image:
+    repository: DOCKER_USERNAME_PLACEHOLDER/kafka
+    tag: latest

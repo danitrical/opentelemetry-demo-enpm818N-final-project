@@ -1,23 +1,26 @@
-name: CD - Deploy to EKS with Helm
+name: CD - Deploy OpenTelemetry Demo to EKS (No Helm)
 
+# on:
+#   workflow_run:
+#     workflows: ["CI - Build and Push Docker Images (Docker Compose)"]
+#     types:
+#       - completed
 on:
-  workflow_run:
-    workflows: ["CI - Build and Push Docker Image"]
-    types:
-      - completed
+  push:
+    branches: [ "main" ]
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
-      HELM_NAMESPACE: ${{ secrets.HELM_NAMESPACE }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
     steps:
-    - name: Checkout repo
+    - name: Checkout Repo
       uses: actions/checkout@v3
 
     - name: Configure AWS Credentials
@@ -25,26 +28,53 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Update kubeconfig for EKS
-      run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
-
-    - name: Install Helm
-      uses: azure/setup-helm@v3
-
-    - name: Add OpenTelemetry Helm repo
       run: |
-        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-        helm repo update
+        aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
 
-    - name: Inject DockerHub username into helm-values.yaml
-      run: |
-        sed -i "s|DOCKER_USERNAME_PLACEHOLDER|${{ secrets.DOCKER_USERNAME }}|g" helm-values.yaml
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: latest
 
-    - name: Deploy using Helm
+    - name: Replace image registry in manifests
       run: |
-        helm upgrade --install otel-demo open-telemetry/opentelemetry-demo \
-          --namespace ${{ secrets.HELM_NAMESPACE }} \
-          --create-namespace \
-          -f helm-values.yaml
+        sed -E -i "s|ghcr.io/open-telemetry/demo:2.0.2-([a-zA-Z0-9\-]+)|$DOCKER_USERNAME/\1:latest|g" kubernetes/opentelemetry-demo.yaml
+
+    - name: Apply Kubernetes manifests
+      run: |
+        kubectl apply -f kubernetes/opentelemetry-demo.yaml -n otel-demo
+
+    # - name: Verify Deployment Status
+    #   run: |
+    #     kubectl get all -n otel-demo
+    #     kubectl rollout status deployment/frontend -n otel-demo
+    - name: Monitor rollout and rollback on failure
+      run: |
+        echo "🔍 Checking rollouts..."
+        deployments=$(kubectl get deployments -n otel-demo -o jsonpath="{.items[*].metadata.name}")
+        failed=0
+
+        for deploy in $deployments; do
+          echo "⏳ Waiting for rollout of $deploy..."
+          if ! kubectl rollout status deployment/$deploy -n otel-demo --timeout=120s; then
+            echo "❌ Rollout failed for $deploy"
+            failed=1
+            break
+          fi
+          echo "✅ $deploy rolled out successfully"
+        done
+
+        if [ "$failed" -eq 1 ]; then
+          echo "🚨 A failure was detected. Rolling back ALL deployments..."
+          for deploy in $deployments; do
+            echo "🔁 Rolling back $deploy..."
+            kubectl rollout undo deployment/$deploy -n otel-demo || echo "⚠️ Failed to rollback $deploy"
+          done
+          exit 1
+        else
+          echo "✅ All deployments succeeded"
+        fi
+
