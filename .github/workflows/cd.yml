@@ -1,0 +1,50 @@
+name: CD - Deploy to EKS with Helm
+
+on:
+  workflow_run:
+    workflows: ["CI - Build and Push Docker Image"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      HELM_NAMESPACE: ${{ secrets.HELM_NAMESPACE }}
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Update kubeconfig for EKS
+      run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+
+    - name: Add OpenTelemetry Helm repo
+      run: |
+        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+        helm repo update
+
+    - name: Inject DockerHub username into helm-values.yaml
+      run: |
+        sed -i "s|DOCKER_USERNAME_PLACEHOLDER|${{ secrets.DOCKER_USERNAME }}|g" helm-values.yaml
+
+    - name: Deploy using Helm
+      run: |
+        helm upgrade --install otel-demo open-telemetry/opentelemetry-demo \
+          --namespace ${{ secrets.HELM_NAMESPACE }} \
+          --create-namespace \
+          -f helm-values.yaml
