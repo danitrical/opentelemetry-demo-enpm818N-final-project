@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+    app.kubernetes.io/instance: kube-prometheus-stack
+
+
+  name: pod-restart-alert
+  namespace: monitoring
+spec:
+  groups:
+  - name: pod-alerts
+    rules:
+    - alert: PodRestartCountExceeded
+      expr: kube_pod_container_status_restarts_total{namespace="otel-namespace"} > 1
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted more than 1 time in the last 5 minutes."
+        summary: "Pod restart count exceeded"
